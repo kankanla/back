@@ -2,14 +2,15 @@
 error_reporting(E_ALL);
 date_default_timezone_set('Asia/Tokyo');
 include_once('../acclog.php');
+include_once('aixin.php');
 //youtube playlist input
-//2015/12/20
+//2016/03/13
 //https://developers.google.com/youtube/iframe_api_reference
 ?>
 <!DOCTYPE html>
 <html>
   <body>
-	<div>信息录入界面</div>
+	<div>信息录入界面20160313</div>
     <div id="player"></div>
 	<br>
 	<div>list_id</div>
@@ -82,19 +83,29 @@ include_once('../acclog.php');
 			
 			if(event.target.getPlayerState() == 3){
 				stop(event);
-					console.log('------start------');
+					console.log('#007 ------start------');
 					console.log(event.target.getPlaylistIndex());
 					console.log(event.target.getVideoData());
 					
 					var v_data = event.target.getVideoData();
-						v_data.title =  encodeURIComponent(v_data.title.replace('&','%26'));
+						console.info('#017 v_data',v_data);
+/* 						v_data.title =  encodeURIComponent(v_data.title.replace('&','%26'));
 						v_data.title =  encodeURIComponent(v_data.title.replace('"','%22'));
 						v_data.author = encodeURIComponent(v_data.author.replace('&','%26'));
 						v_data.author = encodeURIComponent(v_data.author.replace('"','%22'));
+						 */
+						
+						// v_data.title =  v_data.title.replace('&','%26');
+						// v_data.title =  v_data.title.replace('"','%22');
+						// v_data.author = v_data.author.replace('&','%26');
+						// v_data.author = v_data.author.replace('"','%22');
+						
+						v_data.title = encodeURIComponent(fn_replace(v_data.title));
+						v_data.author = encodeURIComponent(fn_replace(v_data.author));
 
 					send(v_data,'129');
-					send({'lid_rowid':lid_rowid,'video_id':v_data.video_id},'198');
-					console.log('------end------');
+					send({"lid_rowid":lid_rowid,"video_id":v_data.video_id},'198');
+					console.log('#008------end------');
 			}
 			
 			if(event.target.getPlayerState() == 4){
@@ -103,14 +114,16 @@ include_once('../acclog.php');
 			
 			if(event.target.getPlayerState() == 5){
 				//cuePlaylist
+				//sent 120 リストを更新します。 グローバル ajax で lid_rowid を取得します。
 				stop(event);
 				if(event.target.getPlaylist()){
 					if(event.target.getVideoData().video_id == event.target.getPlaylist()[event.target.getPlaylist().length -1]) {
 						event.target.stopVideo();
 					}else{
-						comment = encodeURIComponent(comment.replace('"','%22'));
-						comment = encodeURIComponent(comment.replace('&','%26'));
-						send ({'list':list,'title':list_title,'eng_name':eng_name,'pinyin_name':pinyin_name,'comment':comment},'120');
+						var c = encodeURIComponent(fn_replace(comment));
+						var l = encodeURIComponent(fn_replace(list_title));
+						
+						send ({'list':list,'title':l,'eng_name':eng_name,'pinyin_name':pinyin_name,'comment':c},'120');
 						document.getElementById("list_id").value = "";
 						document.getElementById("list_title").value = "";
 						document.getElementById("eng_name").value = " ";
@@ -141,7 +154,7 @@ include_once('../acclog.php');
 			var url = '/youtube_db/add_eng.php?rand=' + rand;
 				ajax.onreadystatechange = function(){
 					if(ajax.readyState == 4 && ajax.status == 200){
-						
+						console.info('#157 send responseText',ajax.responseText);
 						if(JSON.parse(ajax.responseText)['video_id'] && !JSON.parse(ajax.responseText)['updatecheck']){
 							console.log('v_data: ' + decodeURIComponent(ajax.responseText));
 						}						
@@ -150,13 +163,12 @@ include_once('../acclog.php');
 							lid_rowid = JSON.parse(ajax.responseText)['lid_rowid'];
 							console.log('lid_rowid: ' + lid_rowid);
 						}
-						//console.log('orij:  ' + ajax.responseText);
-						//console.log('orij:  ' + decodeURIComponent(ajax.responseText));
 					}
 				}
 				
 				ajax.open('POST',url,false);
 				ajax.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+				console.info('send_jeon_data #171>>>>',json_data);
 				ajax.send('p=' + JSON.stringify(json_data));
 		}
 		
@@ -190,21 +202,17 @@ include_once('../acclog.php');
 		}
 
 		function stop(event){
-			console.log('stop_' + event.target.getPlayerState());
-			console.log(event);
+			console.info('#205 stop_event >> ',event.target.getPlayerState());
 			if(event.target.getPlaylist()){
 				if(event.target.getVideoData().video_id == event.target.getPlaylist()[event.target.getPlaylist().length -1]) {
-					//console.log(event.target.get)
 					event.target.setLoop({loopPlaylists:false});
 					event.target.stopVideo();
-					alert('page_reload');
-					location.reload();
+					document.getElementById('player').parentElement.removeChild(document.getElementById('player'));
 				}else{
 					event.target.playVideo();
 				}
 			}
 		}
-
 
 		function start(){
 			if(document.getElementById("list_id").value != "" && document.getElementById("list_title").value != "" ){
@@ -216,7 +224,15 @@ include_once('../acclog.php');
 				comment = document.getElementById("comment").value;
 				player.cuePlaylist({list:list});
 			}
-		}	
+		}
+		
+		function fn_replace(q){
+			var x = {'&':'%26', '"':'%22'};
+			for(var i in x){
+				q= q.replace(RegExp(i,'g'),x[i]);
+			}
+			return q;
+		}
 		
 		function list_chk(){
 			// rand == 199
@@ -224,7 +240,6 @@ include_once('../acclog.php');
 					re_send(JSON.stringify({'list_id':document.getElementById("list_id").value}),'199');
 			}
 		}
-		
 		
 		onload = function(){
 			var tag_button = document.getElementById("start_button");
@@ -235,8 +250,6 @@ include_once('../acclog.php');
 		}
 	  
 	  
-	  
     </script>
   </body>
 </html>
-
