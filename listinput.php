@@ -101,17 +101,6 @@ if($_SERVER['SERVER_ADDR'] === '192.168.11.10'){
 					
 					var v_data = event.target.getVideoData();
 						console.info('#017 v_data',v_data);
-/* 						v_data.title =  encodeURIComponent(v_data.title.replace('&','%26'));
-						v_data.title =  encodeURIComponent(v_data.title.replace('"','%22'));
-						v_data.author = encodeURIComponent(v_data.author.replace('&','%26'));
-						v_data.author = encodeURIComponent(v_data.author.replace('"','%22'));
-						 */
-						
-						// v_data.title =  v_data.title.replace('&','%26');
-						// v_data.title =  v_data.title.replace('"','%22');
-						// v_data.author = v_data.author.replace('&','%26');
-						// v_data.author = v_data.author.replace('"','%22');
-						
 						v_data.title = encodeURIComponent(fn_replace(v_data.title));
 						v_data.author = encodeURIComponent(fn_replace(v_data.author));
 
@@ -239,7 +228,10 @@ if($_SERVER['SERVER_ADDR'] === '192.168.11.10'){
 		}
 		
 		function fn_replace(q){
-			var x = {'&':'%26', '"':'%22'};
+			var x = {'&':'%26', 
+					 '"':'%22',
+					 '\n':'%0d%0a'
+					 };
 			for(var i in x){
 				q= q.replace(RegExp(i,'g'),x[i]);
 			}

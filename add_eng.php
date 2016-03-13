@@ -61,20 +61,23 @@ class youtube_db_eng{
 		$db = new sqlite3($this->db_name);
 		$db->busyTimeout(10000);
 		$title = urldecode($temp->title);
-		$comment = urldecode($temp->comment);
+		$comment = urldecode(htmlentities($temp->comment));
+		$list = urldecode($temp->list);
 		
-		$sql_select = "select rowid from LID where list = '{$temp->list}'";
-		$sql_insert = "insert into LID (list,title,eng_name,pinyin_name,comment)values('{$temp->list}','{$title}','{$temp->eng_name}','{$temp->pinyin_name}','{$comment}')";
-		$sql_update = "update LID set title = '{$title}', eng_name = '{$temp->eng_name}', pinyin_name = '{$temp->pinyin_name}', comment = '{$comment}', Updatedate = date('now') where list = '{$temp->list}'";
+		$sql_select = "select rowid from LID where list = '{$list}'";
+		$sql_insert = "insert into LID (list,title,eng_name,pinyin_name,comment)values('{$list}','{$title}','{$temp->eng_name}','{$temp->pinyin_name}','{$comment}')";
+		$sql_update = "update LID set title = '{$title}', eng_name = '{$temp->eng_name}', pinyin_name = '{$temp->pinyin_name}', comment = '{$comment}', Updatedate = date('now') where list = '{$list}'";
 		
 							   
 			if($db->querySingle($sql_select) == null){
 				$db->exec($sql_insert);
 				$temp2['lid_rowid'] = $db->querySingle($sql_select);
+				$temp2['zFunction'] = 'function lid($p)';
 				echo json_encode($temp2);
 			}else{
 				$db->exec($sql_update);
 				$temp2['lid_rowid'] = $db->querySingle($sql_select);
+				$temp2['zFunction'] = 'function lid($p)';
 				echo json_encode($temp2);
 				$sql_update2 = "update VID_LID set active = '3' where LID_rowid = '{$temp2['lid_rowid']}' AND active != '2'";
 				$db->exec($sql_update2);
@@ -144,6 +147,7 @@ class youtube_db_eng{
 				$j['title'] = $temp->title;
 				$j['json_last_error'] = json_last_error();
 				$j['SQLite3::lastErrorMsg'] = $db->lastErrorMsg();
+				$j['zFunction'] = 'function vid ($p)';
 				echo json_encode($j);
 			}
 			
@@ -217,6 +221,7 @@ class youtube_db_eng{
 			$j['video_id'] = $temp->video_id;
 			$j['json_last_error'] = json_last_error();
 			$j['SQLite3::lastErrorMsg'] = $db->lastErrorMsg();
+			$j['zFunction'] = 'function lvid($p)';
 			echo json_encode($j);
 			
 			$db->close();
@@ -226,7 +231,7 @@ class youtube_db_eng{
 	//rand == 199
 	//LID 情報をリクエスト
 	function chk_list($p){
-		$qtemp = json_decode($p)->list_id;
+		$qtemp = urldecode(json_decode($p)->list_id);
 		$db = new sqlite3($this->db_name);
 		$db->busyTimeout(10000);
 		$temp = $db->prepare('select * from lid where list = :a');
@@ -234,7 +239,9 @@ class youtube_db_eng{
 		$temp2 = $temp->execute();
 		$temp3 = array();
 		while($val = $temp2->fetchArray(SQLITE3_ASSOC)){
-			$temp3[count($temp3)] = $val;
+			$con = count($temp3);
+				$temp3[$con] = $val;
+				$temp3[$con]['zFunction'] = 'function chk_list($p)';
 		}
 		echo json_encode($temp3);
 		$db->close();
