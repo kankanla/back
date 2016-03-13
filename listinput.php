@@ -1,11 +1,23 @@
 <?php
 error_reporting(E_ALL);
 date_default_timezone_set('Asia/Tokyo');
-include_once('../acclog.php');
-include_once('aixin.php');
+
+//include_once('aixin.php');
 //youtube playlist input
 //2016/03/13
 //https://developers.google.com/youtube/iframe_api_reference
+//PL5l9iRZwq9UlIbwxMCZLR6N6r3FAvOSqk1
+
+//LOG
+////////////////////////////////////////////
+if($_SERVER['SERVER_ADDR'] === '192.168.11.10'){
+	include_once('acclog.php');
+	}else{
+	//C:/htdocs/doc/acclog.php ; サイトに利用する際に利用URL
+	include_once('C:/htdocs/doc/acclog.php');
+}
+
+
 ?>
 <!DOCTYPE html>
 <html>
