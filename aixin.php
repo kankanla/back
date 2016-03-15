@@ -1,5 +1,5 @@
 <?php
-if(count(get_included_files()) == 1 or basename($_SERVER['SCRIPT_FILENAME']) == 'include_main_document.php'){
+if(count(get_included_files()) == 1 or basename($_SERVER['SCRIPT_FILENAME']) == 'aixin.php'){
 	include_once('404.php');
 }
 
