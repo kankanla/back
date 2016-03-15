@@ -3,8 +3,7 @@
 error_reporting(E_ALL);
 date_default_timezone_set('Asia/Tokyo');
 set_time_limit(120);
-session_name('aixin');
-session_start();
+
 
 //利用方法
 //log
