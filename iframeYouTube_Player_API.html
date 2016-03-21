@@ -1,0 +1,207 @@
+<!-- https://developers.google.com/youtube/iframe_api_reference?hl=ja#Queueing_Functions -->
+
+<div>YouTube 埋め込みプレーヤー</div>
+<div><a href="https://www.youtube.com/channel/UCk0QT-xjO1y4gsa2bFyNDjQ" title="Songs BGM Channel">Songs BGM Channel</a></div>
+<div id="player2"></div><br />
+<h3 id="nextVideo">nextVideo</h3>
+<h3 id="previousVideo">previousVideo</h3>
+<h3 id="playVideo">playVideo</h3>
+<h3 id="stopVideo">stopVideo</h3>
+<h3 id="pauseVideo">pauseVideo</h3>
+<h3 id="seekTo30">seekTo30</h3>
+<h3 id="mute">mute</h3>
+<h3 id="volumeP">volumeP</h3>
+<h3 id="volumeM">volumeM</h3>
+
+
+<script>
+    var tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    var player;
+    var playlist = 'PLvswSo32Xlu_rUhe-e8pODo-sqyj99zAj';
+    var videoid = 'koNJ1W7gP78';
+    // var array_list = ['koNJ1W7gP78','uo35R9zQsAI'];
+    
+    var div_area = 'player2';
+    var h = '135';
+    var w = '240'
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player(div_area, {
+          height: h,
+          width: w,
+          videoId: videoid,
+          playerVars:{
+                  'controls':'1',
+                  'disablekb':'0',
+                  'iv_load_policy':'3',
+                  'modestbranding':'0',
+                  'showinfo':'0',
+                  'playsinline':'0'
+                },
+          events: {
+                  'onReady': onPlayerReady,
+                  'onStateChange': onPlayerStateChange,
+                  'onError':onPlayerError
+                }
+        });
+    }
+   
+    function onPlayerReady(event) {
+            event.target.setVolume(3);
+            event.target.cuePlaylist({list:playlist});
+      }
+
+    function onPlayerStateChange(event) {
+          console.info('#061 onPlayerStateChange');
+          console.info('#000 State:',event.target.getPlayerState());
+          console.info('#066 player.getPlayerState()',event.target.getPlayerState());
+          event.target.setPlaybackQuality('tiny');
+
+              // -1（未開始）
+              // 0（終了）
+              // 1（再生中）
+              // 2（停止）
+              // 3（バッファリング中）
+              // 5（頭出し済み）
+
+          if(event.target.getPlayerState()== -0){
+          	}
+
+
+          if(event.target.getPlayerState()== 0){
+              	event.target.playVideoAt(rand_play_index());
+          	}
+
+          if(event.target.getPlayerState()== 1){
+          		console.info('#079 State:',event.target.getPlayerState());
+          		console.info('#080 VideoInfo',player.getVideoData());
+          	}
+
+          if(event.target.getPlayerState()== 2){
+          	}
+
+          if(event.target.getPlayerState()== 3){
+          	}
+
+          if(event.target.getPlayerState()== 4){
+          	}
+
+          if(event.target.getPlayerState() == 5 ){
+                event.target.playVideoAt(rand_play_index());
+            }
+      }
+
+    function rand_play_index (){
+    		var index = Math.floor(Math.random() * player.getPlaylist().length);
+    		return index;
+      }
+
+
+    function one_list_play(event){
+
+      }
+    
+    function onPlayerError(event){
+        event.target.nextVideo();
+      }
+    
+    function f_nextVideo(){
+        if(document.getElementById('nextVideo')){
+            var tag = document.getElementById('nextVideo')
+                tag.addEventListener('click',function(){player.nextVideo();},false);
+          }
+      }
+    
+    function f_previousVideo(){
+        if(document.getElementById('previousVideo')){
+            var tag = document.getElementById('previousVideo')
+                tag.addEventListener('click',function(){player.previousVideo();},false);
+          }
+      }
+
+    function f_playVideo(){
+        if(document.getElementById('playVideo')){
+            var tag = document.getElementById('playVideo');
+                tag.addEventListener('click',function(){player.playVideo();},false);
+          }
+      }
+    
+    function f_stopVideo(){
+        if(document.getElementById('stopVideo')){
+            var tag = document.getElementById('stopVideo');
+                tag.addEventListener('click',function(){player.stopVideo();},false);
+          }
+      }
+
+    function f_pauseVideo(){
+        if(document.getElementById('pauseVideo')){
+            var tag = document.getElementById('pauseVideo');
+                tag.addEventListener('click',function(){player.pauseVideo();},false);
+          }
+      }
+    
+    function f_seekTo30(){
+        if(document.getElementById('seekTo30')){
+            var tag = document.getElementById('seekTo30');
+                tag.addEventListener('click',function(){
+                player.seekTo(player.getCurrentTime()+30);},false);
+          }
+      }
+
+    function f_mute(){
+        if(document.getElementById('mute')){
+            var tag = document.getElementById('mute');
+                tag.addEventListener('click',function(){
+                  if(player.isMuted()){
+                        console.info('#140 getVolume',player.getVolume());
+                        player.unMute();
+                    }else{
+                        console.info('#143 getVolume',player.getVolume());
+                        player.mute();
+                    }},false);
+          }
+      }
+
+    function f_VolumeP(){
+        if(document.getElementById('volumeP')){
+            var tag = document.getElementById('volumeP');
+                tag.addEventListener('click',function(){
+                player.setVolume(player.getVolume()+3);},false);
+          }
+      } 
+
+    function f_VolumeM(){
+        if(document.getElementById('volumeM')){
+            var tag = document.getElementById('volumeM');
+                tag.addEventListener('click',function(){
+                player.setVolume(player.getVolume()-3);},false);
+          }
+      }
+
+    function debug_info(line_num){
+        console.info('#' + line_num);
+        console.info(player.getVolume());
+        console.info(player.getVideoData());
+        console.info(player.getCurrentTime());
+        console.info(player.getDebugText());
+        console.info(player.getVideoUrl());
+        console.info(player.getPlaylistId());
+    }
+    
+    onload = function(){
+        f_nextVideo();
+        f_previousVideo();
+        f_playVideo();
+        f_stopVideo();
+        f_pauseVideo();
+        f_seekTo30();
+        f_mute();
+        f_VolumeP();
+        f_VolumeM();
+    }
+   
+    
+  </script>
