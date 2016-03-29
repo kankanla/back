@@ -4,7 +4,7 @@ rem 12:17 2016/03/25
 
 rem SETUP
 rem ////////////////////////////////////
-SET USBDRV=F:\
+SET USBDRV=E:\
 SET MOUNTDRV=C:\indrv\
 SET ADDDRV=%MOUNTDRV%ADDDrivers
 SET OSIMGDRV=OSIMG
@@ -12,9 +12,6 @@ SET IMAGEFILE=%USBDRV%sources\install.wim
 SET IMAGENAME="Windows 7 PROFESSIONAL"
 SET BOOTWIM=%USBDRV%sources\boot.wim
 
-:setp1
-%MOUNTDRV%DISM\DISM /Unmount-Image /MountDir:%MOUNTDRV%%OSIMGDRV% /discard
-%MOUNTDRV%DISM\DISM /get-imageinfo /imagefile:%IMAGEFILE%
 
 rem Name : Windows 7 HOMEBASIC
 rem Description : Windows 7 HOMEBASIC
@@ -34,6 +31,11 @@ rem Index : 4
 rem Name : Windows 7 ULTIMATE
 rem Description : Windows 7 ULTIMATE
 rem Size : 12,259,188,245 bytes
+
+:setp1
+%MOUNTDRV%DISM\DISM /Unmount-Image /MountDir:%MOUNTDRV%%OSIMGDRV% /discard
+%MOUNTDRV%DISM\DISM /get-imageinfo /imagefile:%IMAGEFILE%
+
 
 %MOUNTDRV%DISM\DISM /mount-image /imagefile:%IMAGEFILE% /name:%IMAGENAME% /MountDir:%MOUNTDRV%%OSIMGDRV%
 for /D /R %ADDDRV% %%a in (*) do %MOUNTDRV%DISM\DISM /Image:%MOUNTDRV%%OSIMGDRV% /Add-Driver /Driver:%%a /forceunsigned
