@@ -1,22 +1,22 @@
 @echo off 
-rem 12:17 2016/03/25
+rem 9:56 2016/03/30
 
 rem SETUP
 rem ////////////////////////////////////
-SET USBDRV=E
+SET USBDRV=G
 SET ODDDRV=D
 
-goto step2
+
+goto step1
 
 :step1
-rem 
-rem /////////////////////////////////////
-diskpart 
-select valume %USBDRV%
-clean
-pause
+format %USBDRV%: /fs:fat /v:FileToUsb  /x /q
+
 
 :step2
 xcopy %ODDDRV%:* %USBDRV%: /e /g /h /r /y
+
+
+
 
 pause
