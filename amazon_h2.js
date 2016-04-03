@@ -1,4 +1,5 @@
 x = function (){
+	// 検索結果のページにあるタイトルを集取します。
 	console.clear();
 	var x = document.getElementsByTagName('h2');
 	for(var i = 0; i < x.length; i++){
